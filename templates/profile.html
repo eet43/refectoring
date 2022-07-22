@@ -6,9 +6,10 @@
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/css/bootstrap.css">
-    <script src="/js/includeHTML.js"></script>
-    <script src="/js/includeRouter.js"></script>
+    <link rel="stylesheet" href="https://s3.ap-northeast-2.amazonaws.com/devit.shop/css/bootstrap.css">
+    <script src="https://s3.ap-northeast-2.amazonaws.com/devit.shop/js/header.js"></script>
+    <script src="https://s3.ap-northeast-2.amazonaws.com/devit.shop/js/includeHTML.js"></script>
+    <script src="https://s3.ap-northeast-2.amazonaws.com/devit.shop/js/includeRouter.js"></script>
 
     <style>
         * {
@@ -122,6 +123,66 @@
             border: 1px solid #000;
             padding: 0.4rem;
         }
+        .alert {
+            background-color: #E3F6CE;
+            width: 100%;
+            padding: 10px;
+            color: #0B6121;;
+        }
+        .nopoint-alert {
+            background-color: #FBEFF2;
+            width: 100%;
+            height: 35px;
+            color: #F7819F;
+        }
+        .point-alert {
+            background-color: #EFF2FB;
+            width: 100%;
+            padding: 10px;
+            color: #819FF7;
+        }
+        .alert-text {
+            width: max-content;
+            margin: auto;
+        }
+        .icon {
+            margin-right: 10px;
+        }
+        .profile {
+            margin: 50px;
+        }
+        .big-text {
+            font-size: 20px
+        }
+        .general-text {
+            font-size: 15px
+        }
+        .calender {
+            margin-top: 10px;
+        }
+        .search {
+            margin-left: 10px;
+            margin-top: 13px;
+        }
+        .search-form {
+            height: 60px;
+            margin: 0 50px 50px;
+        }
+        .charge {
+            background-color: #EFF8FB;
+        }
+        .down {
+            background-color: #FBEFEF;
+        }
+        .pagination {
+            margin-bottom: 50px;
+        }
+        .header {
+            width: 100%;
+        }
+        .logo {
+            height: 50px;
+        }
 
     </style>
 
@@ -129,10 +190,9 @@
     <script>
         $(function () {
             $('#profile-bar').empty();
-
-            var token = localStorage.getItem("Authorization");
-            console.log(token)
-
+            
+            let token = header_get_token();
+            
             $.ajax({
                 type: "GET",
                 url: "/api/users", //후에 바뀌어야함
@@ -284,9 +344,41 @@
 
     </script>
 </head>
-
+<body class="search list-style">
+<header class="header">
+    <div class="alert" role="alert" id="token-login-alert">
+        <p class="alert-text">로그인이 풀렸습니다. 다시 로그인해주세요.</p>
+    </div>
+    <div class="alert" role="alert" id="logout-alert">
+        <p class="alert-text">로그아웃이 완료되었습니다.</p>
+    </div>
+    <div class="point-alert" role="alert" id="point-alert">
+        <p class="alert-text">충전이 완료되었습니다.</p>
+    </div>
+    <div class="nav-inner row-content buffer-left buffer-right even clear-after">
+        <div id="brand" style="float:left; display: flex; width: 200px">
+            <img src="https://s3.ap-northeast-2.amazonaws.com/devit.shop/images/header-logo.png" alt="logo" class="logo"/>
+        </div><!-- brand -->
+        <nav>
+            <ul class="reset" role="navigation">
+                <li class="menu-item icon">
+                    <a href="https://www.devit.shop/board"><i class="fa fa-home icon" aria-hidden="true"></i> Home</a>
+                </li>
+                <li class="menu-item icon">
+                    <a href="https://www.devit.shop/point"><i class="fa fa-krw" aria-hidden="true"></i> POINT</a>
+                </li>
+                <li class="menu-item icon">
+                    <a href="https://www.devit.shop/profile"><i class="fa fa-user icon" aria-hidden="true"></i> 프로필</a>
+                </li>
+                <li class="menu-item icon" id="general">
+                    <a onclick="logout()"><i class="fa fa-sign-out icon" aria-hidden="true"></i> 로그아웃</a>
+                </li>
+            </ul>
+        </nav>
+    </div><!-- row-content -->
+</header>
+</body>
 <body>
-<header include-html="/header"></header>
 <div class="wrap" style="padding-top: 90px">
     <div class="profile-header">
         <div class="profile-img">
@@ -319,7 +411,52 @@
         </div>
     </div>
 </div>
-<footer include-html="/footer" role="contentinfo"></footer>
+<footer>
+    <div class="row" style="margin-left: 5%">
+        <div class="row-content buffer clear-after ">
+            <section id="top-footer">
+                <div class="box">
+                    <div class="widget column"><!-- la class="widget" è forse generata utomaticamente da wp -->
+                        <h4>김지호</h4>
+                        <ul class="plain">
+                            <li><a href="">jeehp0102@naver.com</a></li>
+                            <li><a href="https://github.com/kimziaco">https://github.com/kimziaco</a></li>
+                            <li><a href="https://prod.velog.io/@jeeho102">https://prod.velog.io/@jeeho102</a></li>
+                        </ul>
+                    </div>
+                    <div class="widget column">
+                        <h4>김대희</h4>
+                        <ul class="plain">
+                            <li><a href="#">1998opening@gmail.com</a></li>
+                            <li><a href="https://github.com/eet43">https://github.com/eet43</a></li>
+                            <li><a href="https://daisyit.tistory.com/">https://daisyit.tistory.com/</a></li>
+                        </ul>
+                    </div>
+                    <div class="widget column">
+                        <h4>이다혜</h4>
+                        <ul class="plain">
+                            <li><a href="#">dahae80912@gmail.com</a></li>
+                            <li><a href="https://github.com/ekgpgdi">https://github.com/ekgpgdi</a></li>
+                            <li><a href="https://ddori-lee.tistory.com/">https://ddori-lee.tistory.com/</a></li>
+                        </ul>
+                    </div>
+                    <div class="widget column">
+                        <ul class="plain">
+                            <h4>느낌있조</h4>
+                            <li><i class="fa fa-github" aria-hidden="true"></i><a href="https://github.com/smRLadlTwh">
+                                https://github.com/smRLadlTwh</a></li>
+                            <li><i class="fa fa-envelope-o" aria-hidden="true"></i><a href=""> smRladlTwh@gmail.com</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section><!-- top-footer -->
+            <section id="bottom-footer">
+                <p class="keep-left">&copy; 2022 느낌있조</p>
+            </section><!-- bottom-footer -->
+        </div><!-- row-content -->
+    </div><!-- row -->
+</footer>
 <script src="/js/profile.js"></script>
 
 <script>
