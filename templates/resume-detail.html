@@ -1,16 +1,15 @@
 <!DOCTYPE html>
 <head>
-    <meta charset="utf-8">
-    <title>DevIT</title>
-    <script src="http://code.jquery.com/jquery-latest.js"></script>
-    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/css/bootstrap.css">
-    <script src="/js/includeHTML.js"></script>
-    <script src="/js/includeRouter.js"></script>
+  <meta charset="utf-8">
+  <title>DevIT</title>
+  <script src="http://code.jquery.com/jquery-latest.js"></script>
+  <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+  <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap" rel="stylesheet">
+  <script src="/js/includeHTML.js"></script>
+  <script src="/js/includeRouter.js"></script>
 
-    <style>
+  <style>
         * {
             font-family: 'Do Hyeon', sans-serif;
         }
@@ -98,8 +97,8 @@
             border: 2px solid #000;
             width: 100%;
             text-align: center;
-            margin-left:auto;
-            margin-right:auto;
+            margin-left: auto;
+            margin-right: auto;
             border-collapse: collapse;
         }
 
@@ -107,8 +106,8 @@
             border: 2px solid #000;
             width: 100%;
             text-align: center;
-            margin-left:auto;
-            margin-right:auto;
+            margin-left: auto;
+            margin-right: auto;
             border-collapse: collapse;
         }
 
@@ -126,16 +125,31 @@
     </style>
 
 
-    <script>
+  <script>
+
+        let token = null
+        const urlParams = new URL(location.href).searchParams;
+        const boardId = urlParams.get('board-uid');
+        const userId = urlParams.get('user-uid');
+        console.log(boardId)
+
+        let senderName = null
+        let receiverName = null
+
         $(function () {
             $('#profile-bar').empty();
 
-            var token = localStorage.getItem("Authorization");
-            console.log(token)
+            let token = localStorage.getItem("Authorization");
+
+            let userInfo = parseJwt();
+            console.log(userInfo)
+            senderName = userInfo['nickName']
+
+
 
             $.ajax({
                 type: "GET",
-                url: "/api/users", //후에 바뀌어야함
+                url: `/api/users/${userId}`, //후에 바뀌어야함
                 beforeSend: function (xhr) {
                     xhr.setRequestHeader("Authorization", token);
                 },
@@ -143,7 +157,7 @@
                 success: function (response) {
                     console.log(response['data'])
                     let data = response['data'] //JSON 화 시켜주기
-                    let nickName = data['nickName']
+                    receiverName = data['nickName']
                     let email = data['email']
                     let resume = data['resume']
                     let phone_number = resume['phone_number']
@@ -154,21 +168,11 @@
                     let awards = resume['awards']
                     let educations = resume['educations']
 
-                    let user_html = `
-                        <p class="user-mail"><i class="fa fa-user"></i>${nickName}</p>
-                        <p class="user-mail"><i class="fa fa-envelope"></i>${email}</p>
-                        <hr />
-                        <button type="button" onclick="location.href='/post' class="btn btn-primary btn-sm">이력서 작성</button>
-                        <button type="button" onclick="location.href='/point' class="btn btn-primary btn-sm">포인트 관리</button>
-                    `
-
-                    $('#profile-bar').append(user_html);
-
                     let tmp_html = `
                         <div class="header">
                             <div class="header-left">
                                 <div class="name">
-                                    <h2 class="last-name" style="font-weight: bold; margin-bottom: 30px; margin-left : 30px">${nickName}</h1>
+                                    <h2 class="last-name" style="font-weight: bold; margin-bottom: 30px; margin-left : 30px">${receiverName}</h1>
                                 </div>
                             </div>
                             <div class="header-right">
@@ -230,16 +234,13 @@
                             </div>
                             <table class="t-table">
                                 <tr class="tt">
-                                    <td class="tt">${careers['startDate']}</td>
-                                    <td class="tt"></td>
-                                    <td class="tt">${careers['endDate']}</td>
-                                    <td class="tt"></td>
+                                    <td class="tt" colspan="2">${careers['startDate']}</td>
+                                    <td class="tt" colspan="2">${careers['endDate']}</td>
                                     <td class="tt">${careers['careerStatus']}</td>
                                 </tr>
                                 <tr class="tt">
-                                    <td class="tt" colspan="2">${careers['office']}</td>
-                                    <td class="tt" colspan="2">${careers['job']}</td>
-                                    <td class="tt">
+                                    <td class="tt">${careers['office']}</td>
+                                    <td class="tt">${careers['job']}</td>
                                 </tr>
                                 <tr>
                                     <td colspan="5" style="margin-left:auto;
@@ -258,15 +259,20 @@
                                     <td class="tt" colspan="2">${awards['endDate']}</td>
                                 </tr>
                                 <tr class="tt">
-                                    <td class="tt" colspan="2">${awards['competition']}</td>
-                                    <td class="tt" colspan="2">${awards['awards']}</td>
+                                    <td class="tt">${awards['competition']}</td>
+                                    <td class="tt">${awards['awards']}</td>
                                 </tr>
                                 <tr class="tt">
-                                    <td class="tt" colspan="4" style="margin-left:auto;
+                                    <td class="tt" colspan="5" style="margin-left:auto;
             margin-right:auto;">${awards['content']}</td>
                                 </tr>
                             </table>
+
                         </div>
+                        <div>
+                          <button style="weight: 100%" onclick="start_chat()">채팅 시작</button>
+                        </div>
+
                     </div>
                     `;
                     $('#resume-one').append(tmp_html);
@@ -279,7 +285,43 @@
                 }
             })
         })
-        ;
+
+        function parseJwt() {
+            let token = localStorage.getItem("Authorization");
+            let base64Url = token.split('.')[1];
+            let base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            let jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function (c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+
+            return JSON.parse(jsonPayload);
+        }
+
+        function start_chat() {
+          let json_data = {
+            boardId : boardId,
+            receiverId : userId,
+            senderName : senderName,
+            receiverName : receiverName
+          }
+          console.log(json_data)
+
+            $.ajax({
+              type: "POST",
+              url: "/rooms", //후에 바뀌어야함
+              beforeSend: function (xhr) {
+                xhr.setRequestHeader("Authorization", token);
+              },
+              data: {json_data},
+              success: function (response) {
+                console.log(response)
+                let board_Id = response['data']['boardId']
+                //채팅방 정보들
+                location.href = "/new_chat?roomId=" + board_Id;
+
+              }
+            })
+        }
 
 
     </script>
@@ -287,49 +329,17 @@
 
 <body>
 <header include-html="/header"></header>
-<div class="wrap" style="padding-top: 90px">
-    <div class="profile-header">
-        <div class="profile-img">
-            <img src="http://res.heraldm.com/content/image/2022/05/05/20220505000124_0.jpg" width="200" alt="img">
-        </div>
-    </div>
-    <div class="main-bd">
-        <div class="left-side">
-            <div class="profile-side" id="profile-bar">
-            </div>
-        </div>
-        <div class="right-side">
-            <div class="nav">
-                <ul>
-                    <li onclick="tabs(0)" class="user-post active">이력서</li>
-                    <li onclick="tabs(1)" class="user-review">프로필</li>
-                    <li onclick="tabs(2)" class="user-setting">관심 공고</li>
-                </ul>
-            </div>
-            <div class="profile-body">
-                <div class="profile-posts tab">
-                    <div class="box" id="resume-one">
-                    </div>
-                    <div class="profile-review tab">
-                    </div>
-                    <div class="profile-setting tab" id="favorite-bar">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+<div class="box" id="resume-one">
 </div>
 <footer include-html="/footer" role="contentinfo"></footer>
-<script src="/js/profile.js"></script>
-
 <script>
-        includeHTML(function () {
-            includeRouter(function () {
-                // do something in the future
-            });
+    includeHTML(function () {
+        includeRouter(function () {
+            // do something in the future
         });
+    });
 
-    </script>
+</script>
 </body>
 
 </html>
